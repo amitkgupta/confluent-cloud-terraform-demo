@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: producer1
+spec:
+  serviceName: producer1
+  podManagementPolicy: Parallel
+  replicas: 5
+  selector:
+    matchLabels:
+      app: producer1
+  template:
+    metadata:
+      labels:
+        app: producer1
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "producer1"
+        vault.hashicorp.com/agent-inject-secret-client.properties: "secret/data/producer1/client-properties"
+        vault.hashicorp.com/agent-inject-template-client.properties: |
+          {{- with secret "secret/data/producer1/client-properties" -}}
+          sasl.mechanism=PLAIN
+          bootstrap.servers={{ .Data.data.bootstrap_servers }}
+          sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+          username="{{ .Data.data.api_key }}" password="{{ .Data.data.api_secret }}";
+          security.protocol=SASL_SSL
+          client.dns.lookup=use_all_dns_ips
+          {{- end }}
+    spec:
+      serviceAccountName: producer1
+      containers:
+      - name: kafka1
+        image: confluentinc/cp-kafka:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kafka-producer-perf-test \
+            --topic test  \
+            --record-size 64 \
+            --throughput 1 \
+            --producer.config /vault/secrets/client.properties \
+            --num-records 230400
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer1
+spec:
+  clusterIP: None
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: producer1
