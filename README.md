@@ -1,5 +1,24 @@
 # Confluent Cloud Terraform Demo
 
+## Prerequisites
+
+* Google Cloud Platform project
+* Confluent Cloud account
+* `git`
+* `gcloud`
+* `kubectl`
+* `helm`
+* `terraform`
+
+## Clone Repo
+
+```
+$ git clone git@github.com:amitkgupta/confluent-cloud-terraform-demo.git \
+  /tmp/confluent-cloud-terraform-demo
+
+$ cd /tmp/confluent-cloud-terraform-demo
+```
+
 ## Create Kubernetes Cluster
 
 ```
