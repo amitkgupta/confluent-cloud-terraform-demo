@@ -42,8 +42,6 @@ $ kubectl exec -it vault-0 -- /bin/sh
 $ export CONFLUENT_CLOUD_USERNAME=<YOUR_CONFLUENT_CLOUD_EMAIL>
 
 $ export CONFLUENT_CLOUD_PASSWORD=<YOUR_CONFLUENT_CLOUD_PASSWORD>
-
-$ export VAULT_ADDRESS=http://localhost:8200
 ```
 
 ## Expose Vault Locally for Terraform
